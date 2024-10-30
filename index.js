@@ -61,7 +61,6 @@ async function run() {
       res.send(result);
     });
 
-
     app.get("/items", async (req, res) => {
       console.log(req.query.email);
       let query = {};
