@@ -23,16 +23,20 @@ async function run() {
     await client.connect();
 
     const dataCollection = client.db("itemsDB").collection("items");
-
+    app.post("/items", async (req, res) => {
+      const item = req.body;
+      const result = await dataCollection.insertOne(item);
+      res.send(result);
+    });
     app.get("/items", async (req, res) => {
       const cursor = dataCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
-
-    app.post("/items", async (req, res) => {
-      const item = req.body;
-      const result = await dataCollection.insertOne(item);
+    app.get("/items/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await dataCollection.findOne(query);
       res.send(result);
     });
 
@@ -58,23 +62,6 @@ async function run() {
       };
 
       const result = await dataCollection.updateOne(filter, updateDoc, options);
-      res.send(result);
-    });
-
-    app.get("/items", async (req, res) => {
-      console.log(req.query.email);
-      let query = {};
-      if (req.query?.email) {
-        query = { email: req.query.email };
-      }
-      const result = await dataCollection.find(query).toArray();
-      res.send(result);
-    });
-
-    app.get("/items/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await dataCollection.findOne(query);
       res.send(result);
     });
 
